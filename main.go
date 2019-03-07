@@ -23,7 +23,6 @@ func main() {
 	fileB, err := os.Open(filepathB)
 	checkErr(err)
 
-	//look for similarity in table id
 	readerA := csv.NewReader(bufio.NewReader(fileA))
 	readerB := csv.NewReader(bufio.NewReader(fileB))
 
@@ -33,7 +32,7 @@ func main() {
 	dataB, err := readerB.ReadAll()
 	checkErr(err)
 
-	fmt.Println("Matching Headers")
+	// matching headers
 	var headerA2B []int
 	for idxA, hA := range dataA[0] {
 		headerA2B = append(headerA2B, -1)
@@ -45,12 +44,10 @@ func main() {
 		}
 	}
 
-	fmt.Println("Getting keys")
-
+	// get unique identifier for each row in two tables
 	var keyA []string
 	var keyB = make(map[string]int, 0)
 
-	//get uid for each row
 	for _, valAs := range dataA {
 		var uid = ""
 		for colIdxA, valA := range valAs {
@@ -71,8 +68,7 @@ func main() {
 		keyB[uid] = rowIdxB
 	}
 
-	fmt.Println("Mapping")
-	//map
+	// map by unique identifier
 	var out [][]string
 	for rowIdxA, valAs := range dataA {
 		var outRow = valAs
