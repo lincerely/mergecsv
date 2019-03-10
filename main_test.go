@@ -16,8 +16,20 @@ func ExampleMergeCSV() {
 	// [[A B C D E] [1A 1B 1C 1D 1E] [2A 2B 2C 2D 2E] [3A 3B 3C 3D 3E]]
 }
 
-func BenchmarkMergeCSV(b *testing.B) {
+func BenchmarkMergeCSV1(b *testing.B)     { benchmarkMergeCSV(1, b) }
+func BenchmarkMergeCSV10(b *testing.B)    { benchmarkMergeCSV(10, b) }
+func BenchmarkMergeCSV100(b *testing.B)   { benchmarkMergeCSV(100, b) }
+func BenchmarkMergeCSV1000(b *testing.B)  { benchmarkMergeCSV(1000, b) }
+func BenchmarkMergeCSV10000(b *testing.B) { benchmarkMergeCSV(10000, b) }
 
+func benchmarkMergeCSV(rowCount int, b *testing.B) {
+	dataA := generateData([]string{"A", "B", "C", "D"}, rowCount, false)
+	dataB := generateData([]string{"A", "D", "E"}, rowCount, true)
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		mergeCSV(dataA, dataB)
+	}
 }
 
 func generateData(headers []string, rowCount int, shuffledRow bool) [][]string {
