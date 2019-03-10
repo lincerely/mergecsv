@@ -32,6 +32,16 @@ func main() {
 	dataB, err := readerB.ReadAll()
 	checkErr(err)
 
+	out := mergeCSV(dataA, dataB)
+
+	w := csv.NewWriter(os.Stdout)
+	w.WriteAll(out)
+
+	err = w.Error()
+	checkErr(err)
+}
+
+func mergeCSV(dataA, dataB [][]string) [][]string {
 	// matching headers
 	var headerA2B []int
 	for idxA, hA := range dataA[0] {
@@ -39,7 +49,6 @@ func main() {
 		for idxB, hB := range dataB[0] {
 			if hA == hB {
 				headerA2B[idxA] = idxB
-				continue
 			}
 		}
 	}
@@ -73,18 +82,21 @@ func main() {
 	for rowIdxA, valAs := range dataA {
 		var outRow = valAs
 		for colIdxB, valB := range dataB[keyB[keyA[rowIdxA]]] {
-			if colIdxB > 0 {
+
+			duplicate := false
+			for _, idx := range headerA2B {
+				if idx == colIdxB {
+					duplicate = true
+				}
+			}
+
+			if !duplicate {
 				outRow = append(outRow, valB)
 			}
 		}
 		out = append(out, outRow)
 	}
-
-	w := csv.NewWriter(os.Stdout)
-	w.WriteAll(out)
-
-	err = w.Error()
-	checkErr(err)
+	return out
 }
 
 func checkErr(err error) {
